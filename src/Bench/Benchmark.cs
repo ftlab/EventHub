@@ -1,39 +1,65 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 
 namespace Bench
 {
     public class Benchmark
     {
-        public int Count;
-
-        public TimeSpan Total;
-
-        public TimeSpan Avg;
-
-        public TimeSpan Min = TimeSpan.MaxValue;
-
-        public TimeSpan Max = TimeSpan.MinValue;
-
-        public override string ToString()
+        public Benchmark(MethodInfo method, int testCount)
         {
-            return $"Count: {Count},Total: {Total}, avg: {Avg}, Min: {Min}, Max: {Max}";
+            if (testCount < 1) throw new ArgumentException("testCount < 1");
+            Method = method ?? throw new ArgumentNullException(nameof(method));
+            TestCount = testCount;
         }
 
-        public Benchmark Next(TimeSpan ts)
+        public MethodInfo Method { get; }
+
+        public int TestCount { get; }
+
+        public string Group { get; }
+
+        public string Name { get; }
+
+        public BenchmarkResult Run()
         {
-            var b = new Benchmark();
-            b.Count = Count + 1;
-            b.Min = ts < Min ? ts : Min;
-            b.Max = ts > Max ? ts : Max;
-            b.Avg = TimeSpan.FromMilliseconds(
-                Average(Avg.TotalMilliseconds, ts.TotalMilliseconds, b.Count)
-                );
+            if (Method.IsStatic == false)
+                return new BenchmarkResult() { Comment = $"Метод {Method.Name} должен быть статичным" };
+
+            //FIXME
+            if (Method.IsGenericMethod)
+                return new BenchmarkResult() { Comment = $"Обобщенный метод {Method.Name} не поддерживаются" };
+
+            if (Method.GetParameters().Any())
+                return new BenchmarkResult() { Comment = $"Метод {Method.Name} должен быть без параметров" };
+
+            var sw = new Stopwatch();
+            var b = new BenchmarkResult();
+            var cnt = TestCount;
+            while (cnt > 0)
+            {
+                sw.Reset();
+                sw.Start();
+                try
+                {
+                    Method.Invoke(null, null);
+                    sw.Stop();
+
+                    b = b.Next(sw.Elapsed);
+                }
+                catch (Exception e)
+                {
+                    b.Comment = $"Ошибка: {e.Message}";
+                }
+                finally
+                {
+                    sw.Stop();
+                    cnt--;
+                }
+            }
+
             return b;
-        }
-
-        private static double Average(double prev, double next, double n)
-        {
-            return ((n - 1) / n) * prev + next / n;
         }
     }
 }
