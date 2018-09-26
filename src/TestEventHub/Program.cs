@@ -1,11 +1,6 @@
 ﻿using Bench;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace TestEventHub
 {
@@ -19,13 +14,18 @@ namespace TestEventHub
             Console.ReadKey();
         }
 
-        public static Random NGen = new Random();
-        public static double[] Array = Enumerable.Repeat(0, 1000).Select(i => NGen.NextDouble()).ToArray();
-
-        [Benchmark]
-        public static void TestAverage()
+        [BenchmarkGroup(Name = "Мои тесты")]
+        public class MyTests
         {
-            var v = Array.Average();
+            [Benchmark(Name = "Тест 1")]
+            public static void Test2()
+            {
+            }
+
+            [Benchmark(Name = "Тест 2")]
+            public void Test3()
+            {
+            }
         }
     }
 }

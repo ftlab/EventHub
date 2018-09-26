@@ -13,31 +13,45 @@ namespace Bench
         public static void Run()
         {
             var assembly = Assembly.GetCallingAssembly();
-            var types = assembly.GetTypes();
-
-            var groups = types.Select(t => new
-            {
-                Type = t,
-                Group = t.GetCustomAttribute<BenchmarkGroupAttribute>()?.Name ?? t.Name,
-                Bencmarks = t.GetMethods().Select(m => new
+            var groups = assembly.GetTypes()
+                .Select(t => new
                 {
-                    Method = m,
-                    BenchmarkAttribute = m.GetCustomAttribute<BenchmarkAttribute>()
-                }).Where(b => b.BenchmarkAttribute != null)
-                .OrderBy(b => b.BenchmarkAttribute.Name).ToArray(),
-            })
-            .Where(g => g.Bencmarks.Any()).OrderBy(g => g.Group).ToArray();
+                    Type = t,
+                    Group = t.GetCustomAttribute<BenchmarkGroupAttribute>()
+                })
+                .OrderBy(g => g.Group?.Name ?? g.Type.Name).ToArray();
 
             foreach (var group in groups)
             {
-                ResultWriter.OnGroup(group.Group);
+                var groupName = group.Group?.Name ?? group.Type.Name;
 
-                foreach (var binfo in group.Bencmarks)
+                var methods = group.Type.GetMethods().Select(m => new
                 {
-                    var benchmark = new Benchmark(binfo.Method, binfo.BenchmarkAttribute.TestCount);
-                    var result = benchmark.Run();
+                    Method = m,
+                    Benchmark = m.GetCustomAttribute<BenchmarkAttribute>()
+                })
+                .Where(b => b.Benchmark != null)
+                .OrderBy(b => b.Benchmark?.Name ?? b.Method.Name).ToArray();
 
-                    ResultWriter.OnResult(benchmark, result);
+                if (methods.Any())
+                {
+                    ResultWriter.OnGroup(groupName);
+
+                    foreach (var method in methods)
+                    {
+                        var benchmarkName = string.IsNullOrEmpty(method.Benchmark.Name) ? method.Method.Name : method.Benchmark.Name;
+                        var info = new BenchmarkInfo()
+                        {
+                            Group = groupName,
+                            Name = benchmarkName,
+                            TestCount = method.Benchmark.TestCount,
+                        };
+
+                        var benchmark = new Benchmark(method.Method, info);
+                        var result = benchmark.Run();
+
+                        ResultWriter.OnResult(info, result);
+                    }
                 }
             }
         }

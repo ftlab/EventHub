@@ -1,58 +1,49 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Bench
 {
     public class BenchmarkResult
     {
-        public int Count;
+        private List<long> _ticksSet = new List<long>();
 
-        public TimeSpan Total;
+        public string LastError { get; set; }
 
-        public TimeSpan Avg;
+        public int ErrorCount { get; set; }
 
-        public TimeSpan Min = TimeSpan.MaxValue;
+        public int Count => _ticksSet.Count;
 
-        public TimeSpan Max = TimeSpan.MinValue;
+        public long TotalTicks => _ticksSet.Sum();
 
-        public string LastError;
+        public long MinTicks => _ticksSet.Min();
 
-        public int ErrorCount;
+        public long MaxTicks => _ticksSet.Max();
+
+        public long AvgTicks => (long)Math.Ceiling(_ticksSet.Average());
+
+        public TimeSpan Total => TimeSpan.FromTicks(TotalTicks);
+
+        public TimeSpan Min => TimeSpan.FromTicks(MinTicks);
+
+        public TimeSpan Max => TimeSpan.FromTicks(MaxTicks);
+
+        public TimeSpan Avg => TimeSpan.FromTicks(AvgTicks);
 
         public override string ToString()
         {
-            return $"Count: {Count}, Avg: {Total}, Total: {Avg}, Min: {Min}, Max: {Max}, ErrorCount: {ErrorCount}, LastError: {LastError}";
+            return $"Count: {Count}, Avg: {Avg}, Total: {Total}, Min: {Min}, Max: {Max}, ErrorCount: {ErrorCount}, LastError: {LastError}";
         }
 
-        public BenchmarkResult Next(TimeSpan ts)
+        public void Next(long ticks)
         {
-            var b = new BenchmarkResult();
-            b.Count = Count + 1;
-            b.Total += ts;
-            b.Min = ts < Min ? ts : Min;
-            b.Max = ts > Max ? ts : Max;
-            b.Avg = TimeSpan.FromMilliseconds(
-                Average(Avg.TotalMilliseconds, ts.TotalMilliseconds, b.Count)
-                );
-            b.LastError = LastError;
-            return b;
+            _ticksSet.Add(ticks);
         }
 
-        public BenchmarkResult SetError(string error)
+        public void SetError(string error)
         {
-            var b = new BenchmarkResult();
-            b.Count = Count;
-            b.Total = Total;
-            b.Min = Min;
-            b.Max = Max;
-            b.Avg = Avg;
-            b.LastError = error;
-            b.ErrorCount = ErrorCount + 1;
-            return b;
-        }
-
-        private static double Average(double prev, double next, double n)
-        {
-            return ((n - 1) / n) * prev + next / n;
+            LastError = error;
+            ErrorCount = ErrorCount + 1;
         }
     }
 }

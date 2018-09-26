@@ -13,9 +13,13 @@ namespace Bench
             Console.ResetColor();
         }
 
-        public virtual void OnResult(Benchmark benchmark, BenchmarkResult result)
+        public virtual void OnResult(BenchmarkInfo benchmark, BenchmarkResult result)
         {
-            Console.WriteLine($"\t{benchmark.Name}. {result}.");
+            Console.WriteLine($"{benchmark.Name}. {result}.");
+        }
+
+        public virtual void OnError(BenchmarkInfo benchmark, Exception e)
+        {
         }
     }
 }
