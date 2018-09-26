@@ -8,6 +8,8 @@ namespace Bench
 {
     public static class Benchmarks
     {
+        public static BencmarkResultWriter ResultWriter = new BencmarkResultWriter();
+
         public static void Run()
         {
             var assembly = Assembly.GetCallingAssembly();
@@ -16,31 +18,28 @@ namespace Bench
             var groups = types.Select(t => new
             {
                 Type = t,
-                Group = t.GetCustomAttribute<BenchmarkGroupAttribute>()
-            }).ToArray();
-
-            var methods = groups.SelectMany(g =>
-                g.Type.GetMethods().Select(m => new
+                Group = t.GetCustomAttribute<BenchmarkGroupAttribute>()?.Name ?? t.Name,
+                Bencmarks = t.GetMethods().Select(m => new
                 {
                     Method = m,
-                    g.Group,
-                    Benchmark = m.GetCustomAttribute<BenchmarkAttribute>()
-                }))
-                .Where(m => m.Benchmark != null).ToArray();
+                    BenchmarkAttribute = m.GetCustomAttribute<BenchmarkAttribute>()
+                }).Where(b => b.BenchmarkAttribute != null)
+                .OrderBy(b => b.BenchmarkAttribute.Name).ToArray(),
+            })
+            .Where(g => g.Bencmarks.Any()).OrderBy(g => g.Group).ToArray();
 
-            var benchmarks = methods
-                .Select(m => new
-                {
-                    Benchmark = new Benchmark(m.Method, m.Benchmark.TestCount),
-                    Group = m.Group?.Name,
-                    Name = m.Benchmark.Name ?? m.Method.Name,
-                }).ToArray();
-
-            foreach (var b in benchmarks)
+            foreach (var group in groups)
             {
-                var r = b.Benchmark.Run();
+                ResultWriter.OnGroup(group.Group);
+
+                foreach (var binfo in group.Bencmarks)
+                {
+                    var benchmark = new Benchmark(binfo.Method, binfo.BenchmarkAttribute.TestCount);
+                    var result = benchmark.Run();
+
+                    ResultWriter.OnResult(benchmark, result);
+                }
             }
         }
-
     }
 }

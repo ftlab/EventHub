@@ -25,14 +25,14 @@ namespace Bench
         public BenchmarkResult Run()
         {
             if (Method.IsStatic == false)
-                return new BenchmarkResult() { Comment = $"Метод {Method.Name} должен быть статичным" };
+                return new BenchmarkResult() { LastError = $"Метод {Method.Name} должен быть статичным" };
 
             //FIXME
             if (Method.IsGenericMethod)
-                return new BenchmarkResult() { Comment = $"Обобщенный метод {Method.Name} не поддерживаются" };
+                return new BenchmarkResult() { LastError = $"Обобщенный метод {Method.Name} не поддерживаются" };
 
             if (Method.GetParameters().Any())
-                return new BenchmarkResult() { Comment = $"Метод {Method.Name} должен быть без параметров" };
+                return new BenchmarkResult() { LastError = $"Метод {Method.Name} должен быть без параметров" };
 
             var sw = new Stopwatch();
             var b = new BenchmarkResult();
@@ -50,7 +50,7 @@ namespace Bench
                 }
                 catch (Exception e)
                 {
-                    b.Comment = $"Ошибка: {e.Message}";
+                    b.LastError = $"Ошибка: {e.Message}";
                 }
                 finally
                 {
