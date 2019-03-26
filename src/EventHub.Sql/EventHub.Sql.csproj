@@ -4,5 +4,8 @@
     <TargetFrameworks>net35</TargetFrameworks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EventHub.Core\EventHub.Core.csproj" />
+  </ItemGroup>
 
 </Project>
