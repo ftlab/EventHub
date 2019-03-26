@@ -2,14 +2,22 @@
 
   <PropertyGroup>
     <TargetFrameworks>net35</TargetFrameworks>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="System.Configuration" />
+    <Folder Include="Properties\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EventHub.Core\EventHub.Core.csproj" />
+    <ProjectReference Include="..\EventHub.Sql\EventHub.Sql.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
   </ItemGroup>
 
 </Project>

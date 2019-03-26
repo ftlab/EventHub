@@ -7,7 +7,7 @@ namespace EventHub.Core
 {
     public class EventData
     {
-        public DateTime Timestamp { get; set; } = DateTime.Now;
+        public DateTimeOffset Timestamp { get; set; } = DateTime.Now;
 
         public byte[] Body { get; set; }
     }
