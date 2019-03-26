@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestEventHub", "TestEventHu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bench", "Bench\Bench.csproj", "{C85F7760-0F6A-4A65-9BC5-DD5BF47E44C3}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DB.EventHubs", "DB.EventHubs\DB.EventHubs.sqlproj", "{9C9AB08B-808F-46D6-ADAF-4D86D4C471FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,12 @@ Global
 		{C85F7760-0F6A-4A65-9BC5-DD5BF47E44C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C85F7760-0F6A-4A65-9BC5-DD5BF47E44C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C85F7760-0F6A-4A65-9BC5-DD5BF47E44C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C9AB08B-808F-46D6-ADAF-4D86D4C471FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C9AB08B-808F-46D6-ADAF-4D86D4C471FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C9AB08B-808F-46D6-ADAF-4D86D4C471FB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{9C9AB08B-808F-46D6-ADAF-4D86D4C471FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C9AB08B-808F-46D6-ADAF-4D86D4C471FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C9AB08B-808F-46D6-ADAF-4D86D4C471FB}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
