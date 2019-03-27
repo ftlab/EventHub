@@ -45,13 +45,13 @@ namespace EventHub.Core
 
                 _stoped = false;
 
-                _thread = new Thread(RunLoop);
+                _thread = new Thread(Run);
                 _thread.Name = Processor.GetType().Name;
                 _thread.Start();
             }
         }
 
-        private void RunLoop()
+        public void Run()
         {
             while (!_stoped)
             {

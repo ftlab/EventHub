@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{DA2E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourceSample", "EventSourceSample\EventSourceSample.csproj", "{38593BC6-A292-48DD-98EC-C120BD7B9715}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventProcessorSample", "EventProcessorSample\EventProcessorSample.csproj", "{D752CEF8-075F-4CC3-B45D-3D698B92AC4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,12 +45,17 @@ Global
 		{38593BC6-A292-48DD-98EC-C120BD7B9715}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38593BC6-A292-48DD-98EC-C120BD7B9715}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38593BC6-A292-48DD-98EC-C120BD7B9715}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D752CEF8-075F-4CC3-B45D-3D698B92AC4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D752CEF8-075F-4CC3-B45D-3D698B92AC4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D752CEF8-075F-4CC3-B45D-3D698B92AC4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D752CEF8-075F-4CC3-B45D-3D698B92AC4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{38593BC6-A292-48DD-98EC-C120BD7B9715} = {DA2E404F-7FEB-40C7-8C2A-BEC8BE5C5808}
+		{D752CEF8-075F-4CC3-B45D-3D698B92AC4C} = {DA2E404F-7FEB-40C7-8C2A-BEC8BE5C5808}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5764AB7E-F11E-47F2-9756-14FB1665BBE0}
