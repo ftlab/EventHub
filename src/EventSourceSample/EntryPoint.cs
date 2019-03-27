@@ -13,7 +13,8 @@ namespace EventSourceSample
             try
             {
                 var settings = new SqlEventSourceSettings();
-                settings.HubName = "test";
+                settings.HubName = "test_hub";
+                settings.SourceName = "test_source";
                 settings.ConnectionSettings = new ConnectionStringSettings("test"
                     , @"Data Source=(localdb)\ProjectsV13;Initial Catalog=DB.EventHubs;Integrated Security=True;Pooling=False;Connect Timeout=30");
 

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 
 namespace EventHub.Sql
 {
@@ -14,6 +11,10 @@ namespace EventHub.Sql
 
         public ConnectionStringSettings ConnectionSettings { get; set; }
 
-        public TimeSpan SqlTimeout { get; set; } = TimeSpan.FromMinutes(1);
+        public TimeSpan GetOrInsertHubIdTimeout { get; set; } = TimeSpan.FromMinutes(1);
+
+        public TimeSpan GetOrInsertSourceIdTimeout { get; set; } = TimeSpan.FromMinutes(1);
+
+        public TimeSpan InsertEventDataTimeout { get; set; } = TimeSpan.FromMinutes(1);
     }
 }

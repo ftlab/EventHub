@@ -53,9 +53,13 @@ namespace EventHub.Sql
         internal void ExecuteNonQuery(string commandText
             , object parameterBag
             , SqlConnection connection
-            , SqlTransaction transaction)
+            , SqlTransaction transaction
+            , TimeSpan timeout)
         {
-            throw new NotImplementedException();
+            using (var cmd = CreateCommand(commandText, parameterBag, connection, transaction, timeout))
+            {
+                cmd.ExecuteNonQuery();
+            }
         }
 
         internal object ExecuteScalar(string commandText
@@ -95,31 +99,6 @@ namespace EventHub.Sql
             return result;
         }
 
-        internal int GetOrInsertSourceId(string sourceName, int hubId)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void InsertEventData(int sourceId, EventData eventData, SqlConnection connection, SqlTransaction transaction)
-        {
-            Guard.ArgumentNotNull(eventData, nameof(eventData));
-
-            ExecuteNonQuery(
-    @"INSERT INTO dbo.EventData
-( SourceId ,
-  Timestamp ,
-  Body
-)
-VALUES (@SourceId, @Timestamp, @Body);"
-            , new
-            {
-                SourceId = sourceId,
-                Timestamp = eventData.Timestamp,
-                Body = eventData.Body,
-            }
-            , connection, transaction);
-        }
-
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
@@ -138,6 +117,12 @@ VALUES (@SourceId, @Timestamp, @Body);"
                 disposedValue = true;
             }
         }
+
+        internal void ExecuteNonQuery(string v, object p, SqlConnection connection, SqlTransaction transaction, object insertEventDataTimeout)
+        {
+            throw new NotImplementedException();
+        }
+
         // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
         // ~SqlQueryExecutor() {
         //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.

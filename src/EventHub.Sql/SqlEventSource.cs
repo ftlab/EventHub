@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 
 namespace EventHub.Sql
 {
@@ -31,7 +32,7 @@ namespace EventHub.Sql
             get
             {
                 if (_hubId == null)
-                    _hubId = GetOrInsertEventHubId();
+                    _hubId = GetOrInsertHubId();
 
                 return _hubId.Value;
             }
@@ -42,12 +43,8 @@ namespace EventHub.Sql
             get
             {
                 if (_sourceId == null)
-                {
-                    using (var db = CreateExecutor())
-                    {
-                        _sourceId = db.GetOrInsertSourceId(SourceName, HubId);
-                    }
-                }
+                    _sourceId = GetOrInsertSourceId();
+
                 return _sourceId.Value;
             }
         }
@@ -57,7 +54,50 @@ namespace EventHub.Sql
             return new SqlQueryExecutor(ConnectionSettings);
         }
 
-        private int GetOrInsertEventHubId()
+        private int GetOrInsertSourceId()
+        {
+            using (var db = CreateExecutor())
+            using (var connection = db.CreateConnection())
+            {
+                connection.Open();
+
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var idValue = db.ExecuteScalar(
+@"DECLARE @Id INT;
+
+SET @Id = ( SELECT  Id
+            FROM    dbo.EventSource WITH ( HOLDLOCK, UPDLOCK )
+            WHERE   Name = @Name
+                    AND HubId = @HubId
+          );
+
+IF @Id IS NULL
+    BEGIN
+        INSERT  INTO dbo.EventSource
+                ( Name, HubId )
+        VALUES  ( @Name, @HubId );
+        SET @Id = SCOPE_IDENTITY();
+    END;
+
+SELECT  @Id;"
+                    , new
+                    {
+                        Name = SourceName,
+                        HubId = HubId,
+                    }
+                    , connection, transaction
+                    , Settings.GetOrInsertSourceIdTimeout);
+
+                    var result = (int)idValue;
+                    transaction.Commit();
+
+                    return result;
+                }
+            }
+        }
+
+        private int GetOrInsertHubId()
         {
             using (var db = CreateExecutor())
             using (var connection = db.CreateConnection())
@@ -88,18 +128,45 @@ SELECT  @Id;"
                         Name = HubName
                     }
                     , connection, transaction
-                    , Settings.SqlTimeout);
+                    , Settings.GetOrInsertHubIdTimeout);
 
+                    var result = (int)idValue;
                     transaction.Commit();
 
-                    return (int)idValue;
-
+                    return result;
                 }
             }
         }
 
+        private int InsertEventData(EventData eventData
+            , SqlQueryExecutor db, SqlConnection connection, SqlTransaction transaction)
+        {
+            var idValue = db.ExecuteScalar(
+@"INSERT INTO dbo.EventData
+( SourceId ,
+  Timestamp ,
+  Body
+)
+OUTPUT Inserted.Id
+VALUES (@SourceId, @Timestamp, @Body);"
+            , new
+            {
+                SourceId = SourceId,
+                Timestamp = eventData.Timestamp,
+                Body = eventData.Body,
+            }
+            , connection, transaction
+            , Settings.InsertEventDataTimeout);
+
+            var result = (int)idValue;
+
+            return result;
+        }
+
         public void SendEvents(IEnumerable<EventData> events)
         {
+            Guard.ArgumentNotNull(events, nameof(events));
+
             using (var db = CreateExecutor())
             {
                 using (var connection = db.CreateConnection())
@@ -110,8 +177,10 @@ SELECT  @Id;"
                     {
                         foreach (var eventData in events)
                         {
-                            db.InsertEventData(SourceId, eventData, connection, transaction);
+                            InsertEventData(eventData, db, connection, transaction);
                         }
+
+                        transaction.Commit();
                     }
                 }
             }
